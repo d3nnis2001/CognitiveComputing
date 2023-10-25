@@ -288,6 +288,10 @@ class DGraph(object):
         """
         self.nodes = []
         self.edges = []
+        self.num_nodes = 0
+
+    def get_number_of_nodes(self):
+        return self.num_nodes
         
     def add_node(self, node: str):
         """
@@ -300,6 +304,7 @@ class DGraph(object):
         """
         if node not in self.nodes:
             self.nodes.append(node)
+            self.num_nodes = len(self.nodes)
         
     def remove_node(self, node: str):
         """
@@ -314,6 +319,7 @@ class DGraph(object):
         """
         if node in self.nodes:
             self.nodes.remove(node)
+            self.num_nodes = len(self.nodes)
         else:
             raise NameError("Node not in the given graph")
         
@@ -426,7 +432,24 @@ class DGraph(object):
             bool
                 True if node_a is an ancestor of node_b, False otherwise.
         """
-        raise NotImplementedError("TODO is_ancestor")
+        ancestors = self.get_parents(node_b)
+        
+        visited = set() #making sure it works for cyclic graphs
+
+        while ancestors:
+            current_node = ancestors.pop()
+            if current_node in visited: #here we check for nodes that were already visited and skip them
+                continue
+            visited.add(current_node)
+            if current_node == node_a:
+                return True
+            current_parents = self.get_parents(current_node)
+            for parent in current_parents:
+                if parent not in ancestors:
+                    ancestors.append(parent)
+        return False # ancestors is now empty and we have not visited node_a
+        
+
 
     def is_descendant(self, node_a: str, node_b: str) -> bool:
         """
@@ -445,7 +468,22 @@ class DGraph(object):
             bool
                 True if node_a is a descendant of node_b, False otherwise.
         """
-        raise NotImplementedError("TODO is_descendant")
+        descendants = self.get_children(node_b)
+
+        visited = set() #making sure it works for cyclic graphs
+
+        while descendants:
+            current_node = descendants.pop()
+            if current_node in visited: #here we check for nodes that were already visited and skip them
+                continue
+            visited.add(current_node)
+            if current_node == node_a:
+                return True
+            current_children = self.get_children(current_node)
+            for child in current_children:
+                if child not in descendants:
+                    descendants.append(child)
+        return False # descendants is now empty and we have not visited node_a
 
     def is_acyclic(self) -> bool:
         """
@@ -456,7 +494,12 @@ class DGraph(object):
             bool
                 True if there are no cycles within the provided graph, False otherwise.
         """
-        raise NotImplementedError("TODO is_acyclic")
+        for node in self.nodes:
+            if self.is_descendant(node, node):
+                return False
+        return True
+
+
 
 if __name__ == "__main__":
     # Comment: This condition will evaluate to true, if this
@@ -468,7 +511,7 @@ if __name__ == "__main__":
 
     ### Exercise 1
     # Exercise 1, Task 1:
-    print("The fifth fibonacci number is: {}".format(fibonacci(10)))
+    print("The fifth fibonacci number is: {}".format(fibonacci(5)))
     # Exercise 1, Task 2:
     array = random_array(6)
     print("Random array: {}".format(array))
@@ -496,6 +539,12 @@ if __name__ == "__main__":
     print("Number of nodes (properties): {}".format(graph.num_nodes))
     print("Parents of node_c: {}".format(graph.get_parents("node_c")))
     print("Is node_c a descendant of node_a? {}".format(graph.is_descendant("node_c","node_a")))
-    print("Is acyclic? {}".format(graph.is_acyclic))
+    '''
+    graph.add_node("node_b")
+    graph.add_edge("node_c", "node_b")
+    graph.add_edge("node_b", "node_a")
+    '''
+    print("Is node_a a descendant of node_a? {}".format(graph.is_descendant("node_a","node_a")))
+    print("Is acyclic? {}".format(graph.is_acyclic()))
 
     
