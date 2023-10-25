@@ -55,7 +55,13 @@ def fibonacci(n: int) -> int:
     # You will need to write your code here and remove
     # the Exception and return the result using the "return"
     # statement 
-    raise NotImplementedError("TODO Exercise 1, Task 1")
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+    
     
     # return result
 
@@ -96,7 +102,10 @@ def random_array(size: Union[int, Tuple[int, ...]],
             A numpy array of the given size with random values within the given interval.
 
     """
-    raise NotImplementedError("TODO Exercise 1, Task 2")
+    if type(size) == int:
+        return np.random.uniform(min_val, max_val, size)
+    else:
+        return np.random.uniform(min_val, max_val, size=size)
 
 ### Exercise 1, Task 3:
 # Comment: Remember to do both parts of the task!
@@ -119,7 +128,14 @@ def analyze(array: Union[List, np.array]) -> Dict:
             "median" and "mean" with values representing these
             properties of the given array.
     """
-    raise NotImplementedError("TODO Exercise 1, Task 3")
+    min = np.min(array)
+    max = np.max(array)
+    mean = np.mean(array)
+    median = np.median(array)
+    print(min, max, median, mean)
+
+    array_info_dict = {"min": min, "max": max, "median": median, "mean": mean}
+    return array_info_dict
     
 ### Exercise 1, Task 4:
 # Comment: In this exercise you should use matplotlib to visualize some
@@ -140,7 +156,8 @@ def histogram(array: np.array, bins: Optional[int] = 10):
             The number of bins the values of the array should be split
             up in.
     """
-    raise NotImplementedError("TODO Exercise 1, Task 4")
+    plt.hist(array, bins=bins)
+    plt.show
     
 ### Exercise 1, Task 5:
 def list_ends(original_list: Union[List, np.array]) -> List:
@@ -159,7 +176,12 @@ def list_ends(original_list: Union[List, np.array]) -> List:
             A list containing the first and last element of the
             original_list.
     """
-    raise NotImplementedError("TODO Exercise 1, Task 5")
+    print(original_list[0])
+    if len(original_list) <= 1:
+        return original_list
+    else:
+        new_list = [original_list[0], original_list[-1]]
+        return new_list
 
 ### Exercise 1, Task 6:
 def combine_dictionaries(dict_a: Dict, dict_b: Dict) -> Dict:
@@ -182,7 +204,18 @@ def combine_dictionaries(dict_a: Dict, dict_b: Dict) -> Dict:
             A dictionary combining the two given ones.
     """
 
-    raise NotImplementedError("TODO Exercise 1, Task 6")
+    result = {}
+    for key in dict_a:
+        if key in dict_b:
+            result[key] = dict_a[key] + dict_b[key]
+        else:
+            result[key] = dict_a[key]
+
+    for key in dict_b:
+        if key not in dict_a:
+            result[key] = dict_b[key]
+
+    return result
 
 
 ### Exercise 1, Task 7:
@@ -217,7 +250,10 @@ def matrix_mul(matrix_a: np.array, matrix_b: np.array) -> np.array:
             (AttributeError may not be the most appropriate here, 
             but the point is that you raise an exception yourself.)
     """
-    raise NotImplementedError("TODO Exercise 1, Task 7")
+    if matrix_a.shape[0] == matrix_b.shape[1]:
+        return np.dot(matrix_a, matrix_b)
+    else:
+        raise AttributeError("Wrong dimensions on matrices")
 
 ### Exercise 2
 # In this exercise you are asked to write complete the class skeleton
@@ -250,7 +286,8 @@ class DGraph(object):
         """
             A constructor where instance attributes can be setup.
         """
-        raise NotImplementedError("TODO Contructor")
+        self.nodes = []
+        self.edges = []
         
     def add_node(self, node: str):
         """
@@ -261,7 +298,8 @@ class DGraph(object):
             node: String
                 The name of the new node.
         """
-        raise NotImplementedError("TODO add_node")
+        if node not in self.nodes:
+            self.nodes.append(node)
         
     def remove_node(self, node: str):
         """
@@ -274,7 +312,10 @@ class DGraph(object):
             node: String
                 The name of the node to be removed.
         """
-        raise NotImplementedError("TODO remove_node")
+        if node in self.nodes:
+            self.nodes.remove(node)
+        else:
+            raise NameError("Node not in the given graph")
         
     def add_edge(self, node_a: str, node_b: str):
         """
@@ -287,7 +328,8 @@ class DGraph(object):
             node_b: String
                 The name of the second node.
         """
-        raise NotImplementedError("TODO add_edge")
+        if node_a in self.nodes and node_b in self.nodes and (node_a, node_b) not in self.edges:
+            self.edges.append((node_a, node_b))
             
     def remove_edge(self, node_a: str, node_b: str):
         """
@@ -301,7 +343,8 @@ class DGraph(object):
             node_b: String
                 The name of the second node.
         """
-        raise NotImplementedError("TODO remove_edge")
+        if (node_a, node_b) in self.edges:
+            self.edges.remove((node_a, node_b))
             
 
     # Comment for porperties: Properties are the preferred way of not using explicit
@@ -315,7 +358,7 @@ class DGraph(object):
             int
                 The total number of nodes in the graph.
         """
-        raise NotImplementedError("TODO get_number_of_nodes")
+        return len(self.nodes)
     
     def get_parents(self, node: str) -> List[str]:
         """
@@ -332,7 +375,15 @@ class DGraph(object):
             list
                 A list containing all parent nodes of the specified node.
         """
-        raise NotImplementedError("TODO get_parents")
+        if node in self.nodes:
+            parents = []
+            for parent in self.nodes:
+                if (parent, node) in self.edges:
+                    parents.append(parent)
+            return parents
+        else:
+            raise NameError("node not in Graph")
+
             
     def get_children(self, node: str) -> List[str]:
         """
@@ -349,7 +400,14 @@ class DGraph(object):
             list
                 A list containing all children nodes of the specified node.
         """
-        raise NotImplementedError("TODO get_children")
+        if node in self.nodes:
+            children = []
+            for child in self.nodes:
+                if (node, child) in self.edges:
+                    children.append(child)
+            return children
+        else:
+            raise NameError("node not in Graph")
 
     def is_ancestor(self, node_a: str, node_b: str) -> bool:
         """
