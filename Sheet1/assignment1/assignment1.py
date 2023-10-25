@@ -52,12 +52,12 @@ def fibonacci(n: int) -> int:
             The n'th fibonaaci number.
 
     """
-    # You will need to write your code here and remove
-    # the Exception and return the result using the "return"
-    # statement 
-    raise NotImplementedError("TODO Exercise 1, Task 1")
-    
-    # return result
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
 
 
 ### Exercise 1, Task 2:
@@ -95,8 +95,8 @@ def random_array(size: Union[int, Tuple[int, ...]],
         np.array
             A numpy array of the given size with random values within the given interval.
 
-    """
-    raise NotImplementedError("TODO Exercise 1, Task 2")
+    """ 
+    return np.random.uniform(size, min_val, max_val)
 
 ### Exercise 1, Task 3:
 # Comment: Remember to do both parts of the task!
@@ -119,7 +119,17 @@ def analyze(array: Union[List, np.array]) -> Dict:
             "median" and "mean" with values representing these
             properties of the given array.
     """
-    raise NotImplementedError("TODO Exercise 1, Task 3")
+    meanArr = sum(array) / len(array)
+    minimum = min(array)
+    maximum = max(array)
+    medianArr = 0
+    if len(array) % 2 == 1:
+        medianArr = array[(len(array)-1) // 2]
+    else: 
+        medianArr = (array[len(array) // 2] + array[(len(array) // 2) - 1]) / 2
+    print(f"Mean: {meanArr} \nMinimum: {minimum} \nMaximum: {maximum} \nMedian: {medianArr}")
+    dic = {"Mean": meanArr, "Minimum": minimum, "Maximum": maximum, "Median": medianArr}
+    return dic
     
 ### Exercise 1, Task 4:
 # Comment: In this exercise you should use matplotlib to visualize some
@@ -140,7 +150,13 @@ def histogram(array: np.array, bins: Optional[int] = 10):
             The number of bins the values of the array should be split
             up in.
     """
-    raise NotImplementedError("TODO Exercise 1, Task 4")
+    plt.hist(array, bins=bins, color='blue', edgecolor='black')
+    plt.xlabel('Value')
+    plt.ylabel('Frequency')
+    plt.title('Histogram for Exercise 1')
+
+    plt.show()
+
     
 ### Exercise 1, Task 5:
 def list_ends(original_list: Union[List, np.array]) -> List:
@@ -159,7 +175,7 @@ def list_ends(original_list: Union[List, np.array]) -> List:
             A list containing the first and last element of the
             original_list.
     """
-    raise NotImplementedError("TODO Exercise 1, Task 5")
+    return [original_list[0], original_list[-1]]
 
 ### Exercise 1, Task 6:
 def combine_dictionaries(dict_a: Dict, dict_b: Dict) -> Dict:
@@ -182,7 +198,9 @@ def combine_dictionaries(dict_a: Dict, dict_b: Dict) -> Dict:
             A dictionary combining the two given ones.
     """
 
-    raise NotImplementedError("TODO Exercise 1, Task 6")
+    for index, (key, value) in enumerate(dict_b.items()):
+        dict_a[key] = value
+    return dict_a
 
 
 ### Exercise 1, Task 7:
@@ -217,7 +235,9 @@ def matrix_mul(matrix_a: np.array, matrix_b: np.array) -> np.array:
             (AttributeError may not be the most appropriate here, 
             but the point is that you raise an exception yourself.)
     """
-    raise NotImplementedError("TODO Exercise 1, Task 7")
+    if matrix_a.shape[1] != matrix_b.shape[0]:
+        raise AttributeError
+    return np.dot(matrix_a, matrix_b)
 
 ### Exercise 2
 # In this exercise you are asked to write complete the class skeleton
