@@ -96,7 +96,7 @@ def random_array(size: Union[int, Tuple[int, ...]],
             A numpy array of the given size with random values within the given interval.
 
     """ 
-    return np.random.uniform(size, min_val, max_val)
+    return np.random.uniform(min_val, max_val, size)
 
 ### Exercise 1, Task 3:
 # Comment: Remember to do both parts of the task!
@@ -119,17 +119,19 @@ def analyze(array: Union[List, np.array]) -> Dict:
             "median" and "mean" with values representing these
             properties of the given array.
     """
+
     meanArr = sum(array) / len(array)
     minimum = min(array)
     maximum = max(array)
     medianArr = 0
     if len(array) % 2 == 1:
         medianArr = array[(len(array)-1) // 2]
-    else: 
+    else:
         medianArr = (array[len(array) // 2] + array[(len(array) // 2) - 1]) / 2
     print(f"Mean: {meanArr} \nMinimum: {minimum} \nMaximum: {maximum} \nMedian: {medianArr}")
     dic = {"Mean": meanArr, "Minimum": minimum, "Maximum": maximum, "Median": medianArr}
     return dic
+
     
 ### Exercise 1, Task 4:
 # Comment: In this exercise you should use matplotlib to visualize some
@@ -175,7 +177,9 @@ def list_ends(original_list: Union[List, np.array]) -> List:
             A list containing the first and last element of the
             original_list.
     """
-    return [original_list[0], original_list[-1]]
+    if len(original_list) > 0:
+        return [original_list[0], original_list[-1]]
+    return []
 
 ### Exercise 1, Task 6:
 def combine_dictionaries(dict_a: Dict, dict_b: Dict) -> Dict:
@@ -497,7 +501,7 @@ if __name__ == "__main__":
     # Exercise 1, Task 1:
     print("The fifth fibonacci number is: {}".format(fibonacci(5)))
     # Exercise 1, Task 2:
-    array = random_array(6)
+    array = random_array(9, 5, 10)
     print("Random array: {}".format(array))
     # Exercise 1, Task 3:
     moments = analyze(array)
