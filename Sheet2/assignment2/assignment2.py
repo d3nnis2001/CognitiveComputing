@@ -107,7 +107,17 @@ def find_immoralities(graph: Graph) -> List:
             A list of all immoralities contained in the graph. How you
             represent a single immorality is up to you.
     """
-    raise NotImplementedError("TODO Exercise 4.1")
+    immoralities = []
+    for node in graph.nodes:
+        parents = graph.get_parents(node)
+        while parents:
+            current_parent = parents.pop()
+            for parent in parents:
+                if current_parent not in parent.children and  current_parent not in parent.parents:
+                    immoralities.append((current_parent, parent))
+
+    return immoralities
+
 
 def same_skeleton(graph1: Graph, graph2: Graph) -> bool:
     """
@@ -124,9 +134,23 @@ def same_skeleton(graph1: Graph, graph2: Graph) -> bool:
         Returns
         -------
         bool
-            True if the two graphs have the same skeletongs, False otherwise.
+            True if the two graphs have the same skeletons, False otherwise.
     """
-    raise NotImplementedError("TODO Exercise 4.2")
+    undirected_graph1 = graph1.to_undirected()
+    undirected_graph2 = graph2.to_undirected()
+    for node in graph1.nodes:
+        if node not in graph2.nodes:
+            return False
+        else:
+            parents1 = graph1.get_parents(node)
+            parents2 = graph2.get_parents(node)
+            if not parents1 == parents2:
+                return False
+            children1 = graph1.get_children(node)
+            children2 = graph2.get_children(node)
+            if not children1 == children2:
+                return False
+    return True
 
 def markov_equivalent(graph1: Graph, graph2: Graph) -> bool:
     """
@@ -145,7 +169,7 @@ def markov_equivalent(graph1: Graph, graph2: Graph) -> bool:
         bool
             True if the two graphs are Markov equivalent, False otherwise.
     """
-    raise NotImplementedError("TODO Exercise 4.3")
+    return same_skeleton(graph1, graph2) and (find_immoralities(graph1) == find_immoralities(graph2))
 
 ## Exercise 5: Paths
 
@@ -172,7 +196,29 @@ def get_paths(graph: Graph, node_x: Union[Node, str],
             an undirected path from node_x to node_y. These paths should contain
             the starting and end nodes as well.
     """
-    raise NotImplementedError("TODO Exercise 5")
+    graph = graph.to_undirected()
+    current_path = [node_x]
+    found_paths = []
+    for child in graph.get_children(node_x):
+        if child == node_y:
+            found_paths.append(current_path + [node_y]) 
+        else:
+            found_paths = get_paths_rec(graph, child, node_y, found_paths, current_path)
+    return found_paths
+
+
+def get_paths_rec(graph: Graph, node_x: Union[Node, str], 
+                    node_y: Union[Node, str], found_paths: List[List[Union[Node, str]]], current_path: List[Union[Node, str]]) -> List[List[Union[Node, str]]]:
+    current_path.append(node_x)
+    for child in graph.get_children(node_x):
+        if child == node_y:
+            found_paths.append(current_path + [node_y]) 
+        elif child not in current_path:
+            found_paths = get_paths_rec(graph, child, node_y, found_paths, current_path)
+    return found_paths
+
+    
+
 
 
 def create_example_graphs():
