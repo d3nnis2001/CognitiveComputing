@@ -11,7 +11,7 @@ last modified. 13.11.2022
 """
 
 import unittest
-import assignment3 as solution
+import assignment2 as solution
 
 class TestAssignment3(unittest.TestCase):
 
