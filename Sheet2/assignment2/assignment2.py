@@ -167,6 +167,8 @@ def same_skeleton(graph1: Graph, graph2: Graph) -> bool:
     """
     undirected_graph1 = graph1.to_undirected()
     undirected_graph2 = graph2.to_undirected()
+    if set(undirected_graph1.nodes) != set(undirected_graph2.nodes):
+        return False
     for node in undirected_graph1.nodes:
         if node not in undirected_graph2.nodes:
             return False
