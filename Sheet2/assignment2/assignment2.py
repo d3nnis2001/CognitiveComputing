@@ -138,16 +138,16 @@ def same_skeleton(graph1: Graph, graph2: Graph) -> bool:
     """
     undirected_graph1 = graph1.to_undirected()
     undirected_graph2 = graph2.to_undirected()
-    for node in graph1.nodes:
-        if node not in graph2.nodes:
+    for node in undirected_graph1.nodes:
+        if node not in undirected_graph2.nodes:
             return False
         else:
-            parents1 = graph1.get_parents(node)
-            parents2 = graph2.get_parents(node)
+            parents1 = undirected_graph1.get_parents(node)
+            parents2 = undirected_graph2.get_parents(node)
             if not parents1 == parents2:
                 return False
-            children1 = graph1.get_children(node)
-            children2 = graph2.get_children(node)
+            children1 = undirected_graph1.get_children(node)
+            children2 = undirected_graph2.get_children(node)
             if not children1 == children2:
                 return False
     return True
