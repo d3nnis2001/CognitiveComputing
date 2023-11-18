@@ -50,7 +50,15 @@ def find_forks(dg: Graph) -> List[Union[Node, str]]:
             A list containing all Nodes (either object or their name/id) that
             represent forks in the network.
     """
-    raise NotImplementedError("TODO Exercise 3.1")
+    """# alternative:
+    forks = []
+    for node in dg.nodes:
+        if len(dg.get_children(node)) > 1:
+            forks.append(node)
+    
+    return forks
+    """
+    return [node for node in dg.nodes if len(dg.get_children(node)) > 1]
 
 def find_chains(dg: Graph) -> List[Union[Node, str]]:
     """
@@ -68,7 +76,19 @@ def find_chains(dg: Graph) -> List[Union[Node, str]]:
             A list containing all Nodes (either object or their name/id) that
             represent chains in the network.
     """
-    raise NotImplementedError("TODO Exercise 3.2")
+    """# alternative:
+    chains = []
+    for node in dg.nodes:
+        parents = dg.get_parents(node)
+        children = dg.get_children(node)
+        
+        if parents and children:
+            chains.append(node)
+            
+    return chains
+    """
+    return [node for node in dg.nodes
+            if dg.get_parents(node) and dg.get_children(node)]
 
 def find_collider(dg: Graph) -> List[Union[Node, str]]:
     """
@@ -86,7 +106,16 @@ def find_collider(dg: Graph) -> List[Union[Node, str]]:
             A list containing all Nodes (either object or their name/id) that
             represent collider in the network.
     """
-    raise NotImplementedError("TODO Exercise 3.3")
+    """# alternative:
+    collider = []
+    
+    for node in dg.nodes:
+        if len(dg.get_parents(node)) > 1:
+            collider.append(node)
+    
+    return collider
+    """
+    return [node for node in dg.nodes if len(dg.get_parents(node)) > 1]
 
 
 ### Exercise 4: Markov Equality
@@ -259,7 +288,7 @@ if __name__ == "__main__":
     colliders = find_collider(g1)
     print("The graph contains the following colliders: {}".format(colliders))
     assert set(colliders) == set(["A"])
-
+    
     #Markov Equality Since you determine how to represent immoralities
     # I cannot provide any asserts here.
     print("Immoralities for graph 1: ", find_immoralities(g1))
@@ -270,4 +299,3 @@ if __name__ == "__main__":
     # Hint: You may want to test these methods with a more complex graph!
     paths = get_paths(g1, "B", "R")
     print("Undirected paths from B to R in the graph: {}".format(paths))
-
