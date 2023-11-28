@@ -239,8 +239,40 @@ def get_elimination_ordering(bn: BayesianNetwork) -> List[str]:
             you should describe another heuristic and explain how it works
             and what the differences are with respect to the MinFillOrder.
     """
+    elimination_ordering = []
+    undirected = bn.to_undirected()
     
-    raise NotImplementedError("TODO Exercise 3.1")
+    # Continue until all nodes are eliminated
+    while undirected.nodes:
+        fills = []
+        
+        # Calculate the fill-in sets for each node
+        for node in undirected.nodes:
+            fill_of_node = []
+            neighbors = undirected.get_children(node)
+
+            # Check for missing edges between neighbors
+            for cur_neighbor in neighbors:
+                for neighbor_to_check in neighbors:
+                    if neighbor_to_check != cur_neighbor and neighbor_to_check not in undirected.get_children(cur_neighbor):
+                        fill_of_node.append((cur_neighbor, neighbor_to_check))
+                
+            fills.append((node, fill_of_node))
+        
+        #print(fills)
+        #print(min(fills, key=lambda x: len(x[1])))
+        
+        # Choose the variable for elimination based on the minimum fill-in set size
+        elimination_node, new_edges = min(fills, key=lambda x: len(x[1]))
+        
+        # Add edges between neighbors with no edges and delete the chosen elimination node
+        for edge in new_edges:
+            undirected.add_edge(*edge)
+        undirected.remove_node(elimination_node)
+        elimination_ordering.append(elimination_node)
+
+    return elimination_ordering
+        
 
 
 def initialize_factors(bn: BayesianNetwork, evidence: Optional[Dict[str, str]] = None) -> Iterable[Factor]:
@@ -327,3 +359,31 @@ def calculate_probabilities(bn: BayesianNetwork,
 
 if __name__ == "__main__":
     print("please run example_tests.py to check your functions")
+    graph = Graph()
+
+    graph.add_node("A")
+    graph.add_node("B")
+    graph.add_node("C")
+    graph.add_node("D")
+    graph.add_node("E")
+    graph.add_node("F")
+    graph.add_node("G")
+    graph.add_node("H")
+    graph.add_node("I")
+    graph.add_node("L")
+    graph.add_node("M")
+
+    graph.add_edge("A", "C")
+    graph.add_edge("C", "E")
+    graph.add_edge("E", "G")
+    graph.add_edge("E", "H")
+    graph.add_edge("B", "D")
+    graph.add_edge("D", "F")
+    graph.add_edge("F", "H")
+    graph.add_edge("F", "I")
+    graph.add_edge("H", "L")
+    graph.add_edge("I", "M")
+    graph.add_edge("M", "H")
+
+    print("test for elimination ordering on graph from example_test")
+    print(get_elimination_ordering(graph))
