@@ -133,6 +133,13 @@ class TestAssignment3(unittest.TestCase):
         graph = self._create_lecture_graph()
         self.assertFalse(solution.check_independence_general(graph, ["A"], ["I"], ["L","F"]), "A and I are conditionnaly dependent given L and F")
         
+    def test_elimination_order_minFill(self):
+        net = self._create_lecture_graph()
+        # order = solution.get_elimination_order_minfill(net)
+        order = solution.get_elimination_ordering(net.copy())
+        true_order = ['A', 'B', 'G', 'L', 'C', 'D', 'I', 'M', 'E', 'F', 'H']
+        self.assertEqual(order, true_order, "MinFillHeuristic produces this order")    
+        
     
     def get_trivial_net(self):
         net = solution.BayesianNetwork()
