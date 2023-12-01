@@ -57,7 +57,13 @@ def is_collider(dg, node, path):
     prev_node = path[index - 1]
     next_node = path[index + 1]
 
-    return (dg.has_edge(prev_node, node) and dg.has_edge(next_node, node))
+    ancestors = dg.get_ancestors(path[index])
+    if prev_node in ancestors and next_node in ancestors:
+        print("The node is a collider")
+        return True
+    return False
+
+    
 
 def is_path_open(dg, path, nodes_z):
     """ 
@@ -152,7 +158,15 @@ def check_independence(dg, nodes_x, nodes_y, nodes_z):
             True if all nodes in nodes_x are conditionally independent of all
             nodes in nodes_y given the nodes in nodes_z, False otherwise.
     """
-    pass
+    def is_d_separated(dg, nodes_x, nodes_y, nodes_z):
+        pass
+
+    for node_x in nodes_x:
+        for node_y in nodes_y:
+            # Check if node_x and node_y are conditionally independent given nodes_z
+            if not is_d_separated(dg, node_x, node_y, nodes_z):
+                return False
+    return True
 
 # Function to get all children of node as a list
 
@@ -372,7 +386,7 @@ def initialize_factors(bn: BayesianNetwork, evidence: Optional[Dict[str, str]] =
             An iterable (e.g. a list or a set) containing a factor for every 
             node in the BayesianNetwork, properly initialized.
     """
-    raise NotImplementedError("TODO Exercise 4.1")
+    pass
 
 
 def sum_product_elim_var(factors: Iterable[Factor], variable: str) -> Iterable[Factor]:
