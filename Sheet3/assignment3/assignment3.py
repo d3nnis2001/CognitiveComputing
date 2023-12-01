@@ -47,9 +47,17 @@ def is_collider(dg, node, path):
             True if the given node is a collider with respect to the given path
             within the graph, False otherwise.
     """
+    if len(path) < 3:
+        return False
 
-    raise NotImplementedError("TODO Exercise 1.1")
+    index = path.index(node)
+    if index == 0 or index == len(path) - 1:
+        return False
 
+    prev_node = path[index - 1]
+    next_node = path[index + 1]
+
+    return (dg.has_edge(prev_node, node) and dg.has_edge(next_node, node))
 
 def is_path_open(dg, path, nodes_z):
     """ 
@@ -73,7 +81,7 @@ def is_path_open(dg, path, nodes_z):
             False if the path is blocked given given the nodes_z, True otherwise.
         
     """
-    raise NotImplementedError("TODO Exercise 1.2")
+    pass
 
 
 def unblocked_path_exists(dg, node_x, node_y, nodes_z):
@@ -99,7 +107,24 @@ def unblocked_path_exists(dg, node_x, node_y, nodes_z):
             False if all undirected paths between node_x and node_y are blocked 
             given the nodes_z, True otherwise.
     """
-    raise NotImplementedError("TODO Exercise 1.3")
+    visited = set()
+    def blocked(currentnode):
+        if currentnode == node_y:
+            return False
+
+        visited.add(currentnode)
+
+        for child in dg.get_children(currentnode):
+            if child not in visited and child not in nodes_z:
+                if not blocked(child):
+                    return False
+                
+        for parent_node in dg.get_parents(currentnode):
+            if parent_node not in visited and parent_node not in nodes_z:
+                if not blocked(parent_node):
+                    return False
+        return True
+    return not blocked(node_x)
 
 
 def check_independence(dg, nodes_x, nodes_y, nodes_z):
@@ -127,7 +152,7 @@ def check_independence(dg, nodes_x, nodes_y, nodes_z):
             True if all nodes in nodes_x are conditionally independent of all
             nodes in nodes_y given the nodes in nodes_z, False otherwise.
     """
-    raise NotImplementedError("TODO Exercise 1.4")
+    pass
 
 
 def make_ancestral_graph(graph: Graph, nodes: Iterable[Union[Node, str]]) -> Graph:
