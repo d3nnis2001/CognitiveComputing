@@ -129,6 +129,7 @@ def check_independence(dg, nodes_x, nodes_y, nodes_z):
     """
     raise NotImplementedError("TODO Exercise 1.4")
 
+# Function to get all children of node as a list
 
 def make_ancestral_graph(graph: Graph, nodes: Iterable[Union[Node, str]]) -> Graph:
     """
@@ -146,8 +147,19 @@ def make_ancestral_graph(graph: Graph, nodes: Iterable[Union[Node, str]]) -> Gra
         ccbase.networks.Graph
             The resulting ancestral graph.
     """
-    raise NotImplementedError("TODO Exercise 2.1")
 
+    ancestralGraph = graph.copy()
+    nodesToRemove = []
+
+    for node in ancestralGraph.nodes:
+        #check if node and his children are not in nodes
+        if not node in nodes and not any(ancestralGraph.is_ancestor(node, node2) for node2 in nodes):
+            nodesToRemove.append(node)
+
+    for node in nodesToRemove:
+        ancestralGraph.remove_node(node)
+
+    return ancestralGraph
 
 def make_moral_graph(graph: Graph) -> Graph:
     """
@@ -164,8 +176,26 @@ def make_moral_graph(graph: Graph) -> Graph:
         ccbase.networks.Graph
             The resulting moral graph which is undirected.
     """
-    raise NotImplementedError("TODO Exercise 2.2")
 
+    # Function from Ex2
+    def find_immoralities(graph: Graph, immoralities):
+        for node in graph.nodes.values():
+            parents = list(graph.get_parents(node))
+            while parents:
+                current_parent = parents.pop()
+                for parent in parents:
+                    if current_parent not in parent.children and current_parent not in parent.parents:
+                        immoralities.append((current_parent, parent))
+
+    moralGraph = graph.copy()
+    immoralities = []
+    find_immoralities(graph, immoralities)
+
+    for immorality in immoralities:
+        moralGraph.add_edge(immorality[0], immorality[1])
+
+    moralGraph = moralGraph.to_undirected()
+    return moralGraph
 
 def separation(graph: Graph, nodes_z: Iterable[Union[Node, str]]) -> Graph:
     """
@@ -184,7 +214,12 @@ def separation(graph: Graph, nodes_z: Iterable[Union[Node, str]]) -> Graph:
             The resulting graph with all links from the nodes in node_z
             removed.
     """
-    raise NotImplementedError("TODO Exercise 2.3")
+    separatedGraph = graph.copy()
+
+    for node in nodes_z:
+        separatedGraph.remove_node(node)
+
+    return separatedGraph
 
 
 def check_independence_general(graph: Graph, nodes_x: Iterable[Union[Node, str]],
@@ -214,7 +249,24 @@ def check_independence_general(graph: Graph, nodes_x: Iterable[Union[Node, str]]
             True if all nodes in nodes_x are conditionally independent of all
             nodes in nodes_y given the nodes in nodes_z, False otherwise.
     """
-    raise NotImplementedError("TODO Exercise 2.4")
+
+    undirectedGraph = graph.to_undirected()
+    nodes = set(nodes_x) | set(nodes_y) | set(nodes_z)
+
+    ancestralGraph = make_ancestral_graph(undirectedGraph, nodes)
+    moralGraph = make_moral_graph(ancestralGraph)
+    separatedGraph = separation(moralGraph, nodes_z)
+
+    for nodeX in nodes_x:
+        for nodeY in nodes_y:
+            if separatedGraph.is_ancestor(nodeX, nodeY) or separatedGraph.is_ancestor(nodeY, nodeX):
+                return False
+
+            for node in separatedGraph.nodes:
+                if separatedGraph.is_ancestor(node, nodeX) and separatedGraph.is_ancestor(node, nodeY):
+                    return False
+
+    return True
     
 
 def get_elimination_ordering(bn: BayesianNetwork) -> List[str]:
@@ -387,3 +439,4 @@ if __name__ == "__main__":
 
     print("test for elimination ordering on graph from example_test")
     print(get_elimination_ordering(graph))
+
