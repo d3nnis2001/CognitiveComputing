@@ -284,7 +284,7 @@ def check_independence_general(graph: Graph, nodes_x: Iterable[Union[Node, str]]
 
     for nodeX in nodes_x:
         for nodeY in nodes_y:
-            if separatedGraph.is_ancestor(nodeX, nodeY) or separatedGraph.is_ancestor(nodeY, nodeX):
+            if separatedGraph.is_ancestor(nodeX, nodeY):
                 return False
 
             for node in separatedGraph.nodes:
