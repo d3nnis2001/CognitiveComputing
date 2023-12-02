@@ -113,6 +113,9 @@ def unblocked_path_exists(dg, node_x, node_y, nodes_z):
             False if all undirected paths between node_x and node_y are blocked 
             given the nodes_z, True otherwise.
     """
+    for z in nodes_z:
+        dg.remove_node(z)
+
     visited = set()
     def blocked(currentnode):
         if currentnode == node_y:
@@ -122,12 +125,12 @@ def unblocked_path_exists(dg, node_x, node_y, nodes_z):
 
         for child in dg.get_children(currentnode):
             if child not in visited and child not in nodes_z:
-                if not blocked(child):
+                if not blocked(child) or (is_collider(dg, child, dg)):
                     return False
                 
-        for parent_node in dg.get_parents(currentnode):
-            if parent_node not in visited and parent_node not in nodes_z:
-                if not blocked(parent_node):
+        for parent in dg.get_parents(currentnode):
+            if parent not in visited and parent not in nodes_z:
+                if not blocked(parent) or (is_collider(dg, parent, dg)):
                     return False
         return True
     return not blocked(node_x)
@@ -158,13 +161,10 @@ def check_independence(dg, nodes_x, nodes_y, nodes_z):
             True if all nodes in nodes_x are conditionally independent of all
             nodes in nodes_y given the nodes in nodes_z, False otherwise.
     """
-    def is_d_separated(dg, nodes_x, nodes_y, nodes_z):
-        pass
-
     for node_x in nodes_x:
         for node_y in nodes_y:
             # Check if node_x and node_y are conditionally independent given nodes_z
-            if not is_d_separated(dg, node_x, node_y, nodes_z):
+            if not unblocked_path_exists(dg, node_x, node_y, nodes_z):
                 return False
     return True
 
@@ -386,7 +386,13 @@ def initialize_factors(bn: BayesianNetwork, evidence: Optional[Dict[str, str]] =
             An iterable (e.g. a list or a set) containing a factor for every 
             node in the BayesianNetwork, properly initialized.
     """
-    pass
+    factors = []
+    for node in bn.nodes:
+        factor = Factor()
+        if evidence and node.name in evidence:
+            factor.reduce(evidence[node.name])
+        factors.append(factor)
+    return factors
 
 
 def sum_product_elim_var(factors: Iterable[Factor], variable: str) -> Iterable[Factor]:
@@ -405,9 +411,17 @@ def sum_product_elim_var(factors: Iterable[Factor], variable: str) -> Iterable[F
         iterable of ccbase.factor.Factor
             The remaining factors that do no longer include the eliminated variable.
     """
-
-
-    raise NotImplementedError("TODO Exercise 4.2")
+    remaining_factors = []
+    for factor in factors:
+        if variable in factor.variable_order and len(factor.variable_order) > 1:
+            marginalized_factor = factor.marginalize(variable)
+            remaining_factors.append(marginalized_factor)
+        elif variable not in factor.variable_order:
+            remaining_factors.append(factor)
+    result_factor = remaining_factors[0]
+    for factor in remaining_factors[1:]:
+        result_factor = result_factor.multiply(factor)
+    return [result_factor]
 
 
 def calculate_probabilities(bn: BayesianNetwork,
@@ -445,7 +459,7 @@ def calculate_probabilities(bn: BayesianNetwork,
             of these variables.
     """
 
-    raise NotImplementedError("TODO Exercise 4.3")
+
 
 
 if __name__ == "__main__":
