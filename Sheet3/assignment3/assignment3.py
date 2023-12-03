@@ -63,7 +63,6 @@ def is_collider(dg, node, path):
         return True
     return False
 
-    
 
 def is_path_open(dg, path, nodes_z):
     """ 
@@ -80,21 +79,28 @@ def is_path_open(dg, path, nodes_z):
         nodes_z: iterable of Node/Strings
             The set of conditioned nodes, that might influence the paths 
             between node_x and node_y
-        
+
         Returns
         --------
         bool
             False if the path is blocked given given the nodes_z, True otherwise.
-        
+
     """
-    pass
+    if len(path) <= 2:
+        return True
+
+    for node in path:
+        if is_collider(dg, node, path) and node in nodes_z:
+            return True
+        elif node in nodes_z:
+            return False
 
 
 def unblocked_path_exists(dg, node_x, node_y, nodes_z):
     """
         Computes if there is at least one unblocked undirected path
         between node_x and node_y when considering the nodes in nodes_z.
-        
+
         Parameters
         ---------
         dg: Graph
@@ -104,36 +110,35 @@ def unblocked_path_exists(dg, node_x, node_y, nodes_z):
         nodes_y: Node/String
             The second of the two nodes whose paths are to be checked.
         nodes_z: iterable of Node/Strings
-            The set of conditioned nodes, that might influence the paths 
+            The set of conditioned nodes, that might influence the paths
             between node_x and node_y
-            
+
         Returns
         --------
         bool
-            False if all undirected paths between node_x and node_y are blocked 
+            False if all undirected paths between node_x and node_y are blocked
             given the nodes_z, True otherwise.
     """
-    for z in nodes_z:
-        dg.remove_node(z)
 
-    visited = set()
-    def blocked(currentnode):
-        if currentnode == node_y:
-            return False
+    # Function to get all paths between nodeX and nodeY
+    def getPaths(nodeX, nodeY, tempPath):
+        if nodeX not in tempPath:
+            tempPath.append(nodeX)
 
-        visited.add(currentnode)
+            if nodeX == nodeY:
+                paths.append(tempPath)
 
-        for child in dg.get_children(currentnode):
-            if child not in visited and child not in nodes_z:
-                if not blocked(child) or (is_collider(dg, child, dg)):
-                    return False
-                
-        for parent in dg.get_parents(currentnode):
-            if parent not in visited and parent not in nodes_z:
-                if not blocked(parent) or (is_collider(dg, parent, dg)):
-                    return False
-        return True
-    return not blocked(node_x)
+            for node in dg.to_undirected().get_children(nodeX):
+                getPaths(node, nodeY, list(tempPath))
+
+    paths = []
+    getPaths(node_x, node_y, [])
+
+    for path in paths:
+        if is_path_open(dg, path, nodes_z):
+            return True
+
+    return False
 
 
 def check_independence(dg, nodes_x, nodes_y, nodes_z):
@@ -161,14 +166,12 @@ def check_independence(dg, nodes_x, nodes_y, nodes_z):
             True if all nodes in nodes_x are conditionally independent of all
             nodes in nodes_y given the nodes in nodes_z, False otherwise.
     """
-    for node_x in nodes_x:
-        for node_y in nodes_y:
-            # Check if node_x and node_y are conditionally independent given nodes_z
-            if not unblocked_path_exists(dg, node_x, node_y, nodes_z):
+
+    for nodeX in nodes_x:
+        for nodeY in nodes_y:
+            if unblocked_path_exists(dg, nodeX, nodeY, nodes_z):
                 return False
     return True
-
-# Function to get all children of node as a list
 
 def make_ancestral_graph(graph: Graph, nodes: Iterable[Union[Node, str]]) -> Graph:
     """
