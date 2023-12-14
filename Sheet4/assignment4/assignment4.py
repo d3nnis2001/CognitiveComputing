@@ -31,8 +31,14 @@ def maximize_out(factor: Factor, variable: str) -> Factor:
             A new factor that results from maximizing out the 
             variable from the initial factor.
     """
-    raise NotImplementedError("TODO Exercise 1.1")
-    
+    newFactor = factor.copy()
+
+    if variable in newFactor.variable_order:
+        index = factor.variable_order.index(variable)
+        newFactor.potentials = np.max(newFactor.potentials, axis=index)
+        newFactor.variable_order.remove(variable)
+
+    return newFactor
 
 
 def max_product_elim_var(factors: Iterable[Factor], variable: str) -> Tuple[Iterable[Factor], Factor]:
@@ -76,7 +82,20 @@ def traceback(factors: Dict[str, Factor], order: List[str]) -> Dict[str,str]:
             A dictionary containing variable:outcome pairs representing the
             MPE.
     """
-    raise NotImplementedError("TODO Exercise 1.3")
+    instantiation = {}
+
+    for i in order[::-1]:
+        factor = factors[i]
+
+        potentials = []
+        for value in factor.outcomes[i]:
+            instantiation[i] = value
+            potentials.append(factor.potential(instantiation.copy()))
+
+        index = np.argmax(potentials)
+        instantiation[i] = factor.outcomes[i][index]
+
+    return instantiation
 
 
 def calculate_MAP(bn: BayesianNetwork, 
